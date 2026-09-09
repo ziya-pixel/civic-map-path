@@ -1,3 +1,5 @@
+import * as React from "react";
+
 export type DamageType = "Pothole" | "Cracked road" | "Broken road" | "Waterlogged road" | "Other";
 export type Severity = "Low" | "Medium" | "High" | "Critical";
 export type ReportStatus = "Reported" | "Verified" | "In Progress" | "Resolved" | "Rejected";
@@ -97,6 +99,12 @@ export const demoReports: RoadReport[] = [
 ];
 
 const storageKey = "roadwatch-reports";
+
+export function useRoadwatchReports() {
+  const [reports, setReports] = React.useState<RoadReport[]>(demoReports);
+  React.useEffect(() => { setReports(loadReports()); }, []);
+  return [reports, setReports] as const;
+}
 
 export function loadReports(): RoadReport[] {
   if (typeof window === "undefined") return demoReports;

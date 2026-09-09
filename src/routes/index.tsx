@@ -3,12 +3,12 @@ import { ArrowRight, CheckCircle2, MapPinned, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RoadwatchMap } from "@/components/roadwatch-map";
 import { RoadwatchShell } from "@/components/roadwatch-shell";
-import { loadReports, severityClass, statusClass } from "@/lib/roadwatch-data";
+import { severityClass, useRoadwatchReports } from "@/lib/roadwatch-data";
 
 export const Route = createFileRoute("/")({ head: () => ({ meta: [{ title: "RoadWatch — Report damaged roads" }, { name: "description", content: "Spot a pothole, pin it, and send a clear report to your community's repair queue." }, { property: "og:title", content: "RoadWatch — Report damaged roads" }, { property: "og:description", content: "A civic field tool for reporting and repairing damaged roads." }] }), component: HomePage });
 
 function HomePage() {
-  const reports = loadReports();
+  const [reports] = useRoadwatchReports();
   const open = reports.filter((report) => report.status !== "Resolved" && report.status !== "Rejected").length;
   const critical = reports.filter((report) => report.severity === "Critical").length;
   const resolved = reports.filter((report) => report.status === "Resolved").length;
