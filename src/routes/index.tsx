@@ -1,24 +1,20 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { ArrowRight, CheckCircle2, MapPinned, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { RoadwatchMap } from "@/components/roadwatch-map";
+import { RoadwatchShell } from "@/components/roadwatch-shell";
+import { severityClass, useRoadwatchReports } from "@/lib/roadwatch-data";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
-export const Route = createFileRoute("/")({
-  component: Index,
-});
+export const Route = createFileRoute("/")({ head: () => ({ meta: [{ title: "RoadWatch — Report damaged roads" }, { name: "description", content: "Spot a pothole, pin it, and send a clear report to your community's repair queue." }, { property: "og:title", content: "RoadWatch — Report damaged roads" }, { property: "og:description", content: "A civic field tool for reporting and repairing damaged roads." }] }), component: HomePage });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
+function HomePage() {
+  const [reports] = useRoadwatchReports();
+  const open = reports.filter((report) => report.status !== "Resolved" && report.status !== "Rejected").length;
+  const critical = reports.filter((report) => report.severity === "Critical").length;
+  const resolved = reports.filter((report) => report.status === "Resolved").length;
+  return <RoadwatchShell><main>
+    <section className="relative overflow-hidden bg-[linear-gradient(135deg,oklch(.66_.1_260),oklch(.82_.08_205),oklch(.94_.06_330))]"><div className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[.92fr_1.08fr] lg:gap-14 lg:py-16"><div className="flex flex-col justify-center animate-rise"><span className="inline-flex w-fit items-center gap-2 rounded-full border-2 border-ink/80 bg-paper/70 px-3 py-1 font-mono text-[11px] uppercase tracking-[.14em] text-ink"><span className="size-1.5 rounded-full bg-coral" />Live civic reporting</span><h1 className="mt-5 max-w-[12ch] text-5xl font-semibold leading-[.98] tracking-tight sm:text-6xl">Spot a pothole. <span className="text-brand-deep">Pin it.</span></h1><p className="mt-4 max-w-[40ch] text-base text-ink/75 sm:text-lg">A field notebook for your street. Snap a photo, drop a marker, and hand it off for repair — precise enough to fix.</p><div className="mt-7 flex flex-wrap items-center gap-3"><Button asChild size="lg" className="bg-brand text-paper ring-2 ring-brand-deep shadow-[4px_4px_0_0_var(--brand-deep)] hover:-translate-y-0.5 hover:bg-brand"><Link to="/report">Report damage <ArrowRight /></Link></Button><Button asChild size="lg" variant="outline" className="border-2 border-ink/70 bg-paper/60 text-ink shadow-[4px_4px_0_0_oklch(.16_.045_275/.15)] hover:bg-paper"><Link to="/map">View map <MapPinned /></Link></Button></div><div className="mt-9 grid grid-cols-3 gap-2.5">{[[open, "Open reports", ""], [critical, "Critical", "text-coral"], [resolved, "Resolved", "text-mint"]].map(([value, label, color]) => <div key={label} className="rounded-lg border-2 border-ink/15 bg-paper/70 px-3 py-2.5"><div className={`font-mono text-2xl font-semibold leading-none ${color}`}>{value}</div><div className="mt-1 font-mono text-[10px] uppercase tracking-[.1em] text-ink/55">{label}</div></div>)}</div></div><div className="relative animate-rise [animation-delay:80ms]"><div className="relative overflow-hidden rounded-2xl border-2 border-ink bg-cream shadow-[6px_6px_0_0_var(--ink)]"><RoadwatchMap reports={reports} /></div><div className="absolute -bottom-5 -left-2 w-[78%] max-w-[300px] rounded-xl border-2 border-ink bg-paper p-3 shadow-[6px_6px_0_0_var(--ink)]"><div className="flex items-start gap-2.5"><div className="grid size-14 shrink-0 place-items-center rounded-lg bg-cream font-mono text-[9px] uppercase tracking-[.12em] text-ink/40">Photo</div><div className="min-w-0"><div className="flex items-center gap-1.5"><span className={`rounded-full px-2 py-0.5 font-mono text-[10px] uppercase tracking-[.08em] ${severityClass["Critical"]}`}>Critical</span><span className="font-mono text-[10px] text-ink/50">Pothole</span></div><p className="mt-1 truncate text-sm font-medium">Marigold Ave & 4th St</p><p className="font-mono text-[10px] text-ink/50">Reported 2h ago · Verified</p></div></div></div></div></div></section>
+    <section className="border-b-2 border-ink/90 bg-paper"><div className="mx-auto max-w-7xl px-4 py-5 sm:px-6"><div className="flex items-center justify-between"><span className="font-mono text-[11px] uppercase tracking-[.14em] text-ink/60">Recent activity</span><span className="font-mono text-[11px] text-ink/40">Updated just now</span></div><div className="mt-3 grid gap-2.5 sm:grid-cols-3">{reports.slice(0, 3).map((report) => <div key={report.id} className="flex items-center gap-2.5 rounded-lg border-2 border-ink/12 bg-cream/60 px-3 py-2.5"><span className={`size-2.5 shrink-0 rounded-full ${report.status === "Resolved" ? "bg-mint" : report.severity === "Critical" ? "bg-coral" : "bg-amber"}`} /><div className="min-w-0"><p className="truncate text-sm font-medium">{report.damageType} · {report.address.split(",")[0]}</p><p className="font-mono text-[10px] text-ink/50">{report.id} · {report.status}</p></div></div>)}</div></div></section>
+    <section className="bg-cream"><div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16"><div className="max-w-[46ch]"><h2 className="text-3xl font-semibold tracking-tight">From the street to the fix crew</h2><p className="mt-2 text-base text-ink/70">One report, one marker, a clear hand-off. Watch its status change as the road gets repaired.</p></div><div className="mt-8 grid gap-3 sm:grid-cols-3">{[{number:"01", label:"Citizen", title:"Report damage", copy:"Photo, GPS pin, damage type, and severity — captured in seconds on your phone.", icon: MapPinned, tone:"bg-amber/25"}, {number:"02", label:"Authority", title:"Verify & triage", copy:"Markers land on one map. Severity drives the queue so the worst damage is seen first.", icon: ShieldCheck, tone:"bg-brand/20"}, {number:"03", label:"Field", title:"Repair & resolve", copy:"The crew marks it In Progress, then Resolved. The marker updates when the road is back.", icon: CheckCircle2, tone:"bg-mint/25"}].map((step) => <div key={step.number} className={`rounded-xl border-2 border-ink p-4 shadow-[4px_4px_0_0_var(--ink)] ${step.number === "03" ? "bg-brand-deep text-paper" : "bg-paper"}`}><div className="flex items-center justify-between"><span className={`grid size-8 place-items-center rounded-md font-mono text-sm font-semibold ${step.tone}`}>{step.number}</span><span className="rounded-full bg-ink/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[.1em]">{step.label}</span></div><step.icon className="mt-5 size-5" /><h3 className="mt-2 text-base font-semibold">{step.title}</h3><p className={`mt-1 text-sm ${step.number === "03" ? "text-paper/75" : "text-ink/70"}`}>{step.copy}</p></div>)}</div></div></section>
+  </main></RoadwatchShell>;
 }

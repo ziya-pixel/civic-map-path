@@ -1,0 +1,3 @@
+- [x] Build the RoadWatch civic reporting experience across landing, auth, citizen, map, report, and admin screens
+- [x] Add interactive demo behavior for report creation, GPS capture, filtering, status changes, and local persistence
+- [ ] Connect Firebase Authentication, Firestore, and Storage with project credentials and deploy rules
