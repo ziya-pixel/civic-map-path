@@ -93,4 +93,5 @@ button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
 .status-rejected { color: oklch(.52 .17 32); background: oklch(.94 .08 35); }
 .leaflet-map-mock { position: relative; overflow: hidden; min-height: 420px; }
 .leaflet-map-mock::after { content: "N ↑"; position: absolute; right: 18px; top: 18px; border: 2px solid var(--ink); background: var(--paper); padding: 5px 8px; font: 10px var(--font-mono-family); }
+.field-label { display: block; font: 600 10px var(--font-mono-family); letter-spacing: .1em; text-transform: uppercase; color: color-mix(in oklab, var(--ink) 68%, transparent); }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
